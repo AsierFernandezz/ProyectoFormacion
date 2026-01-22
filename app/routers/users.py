@@ -3,6 +3,7 @@ from app.models import UserPublic, UserCreate
 from app.services.user_service import create_user, get_user, get_users
 from typing import List
 from app.core.security import get_current_user
+from app.models.role import Role
 
 router = APIRouter()
 
@@ -24,7 +25,7 @@ def create_a_user(user: UserCreate):
     response_model=UserPublic,
     status_code=200
 )
-def get_user_by_email(email: str = None, current_user: dict = Depends(get_current_user)):
+def get_user_by_email(email: str = None):
     try:
         return get_user(email)
 
@@ -37,8 +38,11 @@ def get_user_by_email(email: str = None, current_user: dict = Depends(get_curren
     status_code=200,
     description="Get all users",
 )
-def get_all_users():
+def get_all_users(current_user: dict = Depends(get_current_user)):
     try:
+        if current_user.get("role") != Role.ADMIN.value:
+            raise HTTPException(status_code=403, detail="No tienes permisos para ver todos los usuarios")
+
         return get_users()
 
     except ValueError as e:

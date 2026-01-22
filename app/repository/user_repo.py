@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional, Dict
 
-fake_db: List[dict] = [{"id": 1, "name": "Paco", "email": "paco@gmail.com", "created_at": datetime.now()}]
+fake_db: List[dict] = [{"id": 1, "name": "Paco", "email": "paco@gmail.com", "created_at": datetime.now(), "role": "user"}]
 
 def add_user(user_dict: Dict) -> Dict:
     fake_db.append(user_dict)
