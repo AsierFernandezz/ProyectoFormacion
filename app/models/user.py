@@ -7,8 +7,8 @@ class UserCreate(BaseModel):
     name: str
     email: str
     password: str
-    is_active: bool
-    role: str
+  #  is_active: bool
+  #  role: str
 
 # lo que devuelve la API
 class UserPublic(BaseModel):
@@ -16,4 +16,4 @@ class UserPublic(BaseModel):
     name: str
     email: str
     created_at: datetime
-    role: str
+   # role: str
