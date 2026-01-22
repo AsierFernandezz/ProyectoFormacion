@@ -23,7 +23,7 @@ def create_a_user(user: UserCreate):
     response_model=UserPublic,
     status_code=200
 )
-def get_user(email: str):
+def get_user_by_email(email: str):
     try:
         return get_user(email)
 
