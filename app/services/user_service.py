@@ -9,7 +9,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def create_user(user:UserCreate = None) -> UserPublic:
     for existing_user in fake_db:
         if get_user_by_email(user.email):
-            raise ValueError("Este email ya existe")
+            raise ValueError("Este user ya existe")
 
     # hashear la contraseña
     hashed_password = pwd_context.hash(user.password)

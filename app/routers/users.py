@@ -1,7 +1,8 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from app.models import UserPublic, UserCreate
 from app.services.user_service import create_user, get_user, get_users
 from typing import List
+from app.core.security import get_current_user
 
 router = APIRouter()
 
@@ -23,7 +24,7 @@ def create_a_user(user: UserCreate):
     response_model=UserPublic,
     status_code=200
 )
-def get_user_by_email(email: str):
+def get_user_by_email(email: str = None, current_user: dict = Depends(get_current_user)):
     try:
         return get_user(email)
 
@@ -46,3 +47,4 @@ def get_all_users():
 @router.put("/user/{id}", response_model=UserPublic, status_code=200)
 def update_user(id, user):
     pass
+
