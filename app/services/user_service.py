@@ -1,5 +1,7 @@
 from datetime import datetime
 from typing import List
+
+import bcrypt
 from passlib.context import CryptContext
 from app.models import UserCreate, UserPublic
 from app.models.role import Role

@@ -1,14 +1,11 @@
 from datetime import datetime
 from pydantic import BaseModel
 
-# lo que recibe la API
+# lo que envia el cliente
 class UserCreate(BaseModel):
-    id: int
     name: str
     email: str
     password: str
-  #  is_active: bool
-    role: str
 
 # lo que devuelve la API
 class UserPublic(BaseModel):

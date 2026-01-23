@@ -1,7 +1,24 @@
 from datetime import datetime
 from typing import List, Optional, Dict
 
-fake_db: List[dict] = [{"id": 1, "name": "Paco", "email": "paco@gmail.com", "created_at": datetime.now(), "role": "user"}]
+fake_db = [
+    {
+        "id": 1,
+        "name": "Asier",
+        "email": "asier@email.com",
+        "password": "$2b$12$...",
+        "role": "user",
+        "created_at": datetime.utcnow(),
+    },
+    {
+        "id": 2,
+        "name": "Paco",
+        "email": "paco@email.com",
+        "password": "$2b$12$zC7F6gDMg..r9rXN4aTBu.nHXYWr/UhiSZikOODcH8S2zUoree/12",
+        "role": "user",
+        "created_at": datetime.utcnow(),
+    }
+]
 
 def add_user(user_dict: Dict) -> Dict:
     fake_db.append(user_dict)

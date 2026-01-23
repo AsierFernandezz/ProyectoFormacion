@@ -51,4 +51,3 @@ def get_all_users(current_user: dict = Depends(get_current_user)):
 @router.put("/user/{id}", response_model=UserPublic, status_code=200)
 def update_user(id, user):
     pass
-
