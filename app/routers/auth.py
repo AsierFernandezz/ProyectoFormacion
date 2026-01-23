@@ -4,7 +4,6 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from app.models import UserPublic
 from app.schemas.auth import TokenResponse, LoginRequest
 from app.services.auth_service import login_user, auth_user
-from app.core.security import oauth2_scheme
 
 router = APIRouter()
 

@@ -39,6 +39,7 @@ def get_user_by_email(email: str = None):
     description="Get all users",
 )
 def get_all_users(current_user: dict = Depends(get_current_user)):
+
     try:
         if current_user.get("role") != Role.ADMIN.value:
             raise HTTPException(status_code=403, detail="No tienes permisos para ver todos los usuarios")

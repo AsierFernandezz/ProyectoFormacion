@@ -1,16 +1,17 @@
 from datetime import timedelta, datetime
 from passlib.context import CryptContext
 from jose import jwt, JWTError
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer, HTTPBearer, HTTPAuthorizationCredentials
 from fastapi import Depends, HTTPException, status
 import secrets
+from app.repository.user_repo import get_user_by_id
 
 SECRET_KEY = secrets.token_hex(64)
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
@@ -33,8 +34,8 @@ def decode_access_token(token:str):
     except JWTError:
         return None
 
-def get_current_user(token:str = Depends(oauth2_scheme)):
-    payload = decode_access_token(token)
+def get_current_user(token: HTTPAuthorizationCredentials = Depends(HTTPBearer())):
+    payload = decode_access_token(token.credentials)
     if not payload:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -42,4 +43,16 @@ def get_current_user(token:str = Depends(oauth2_scheme)):
             headers={"WWW-Authenticate": "Bearer"}
         )
     user_id = int(payload.get("sub"))
-    return {"id": user_id}
+    user = get_user_by_id(user_id)
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuario no encontrado",
+        )
+
+    return {
+        "id": user_id,
+        "role": user.get("role"),
+        "email": user.get("email"),
+    }

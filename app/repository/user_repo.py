@@ -17,6 +17,14 @@ fake_db = [
         "password": "$2b$12$zC7F6gDMg..r9rXN4aTBu.nHXYWr/UhiSZikOODcH8S2zUoree/12",
         "role": "user",
         "created_at": datetime.utcnow(),
+    },
+    {
+        "id": 3,
+        "name": "Nora",
+        "email": "nora@email.com",
+        "password": "$2y$10$ucFHdCarBdDm0md0K0xg5.ZO5SU8Z3CjZYzSOta7jQ2d352lfE4Ri",
+        "role": "admin",
+        "created_at": datetime.utcnow(),
     }
 ]
 
@@ -30,5 +38,11 @@ def get_all_users() -> List[Dict]:
 def get_user_by_email(email:str) -> Optional[Dict]:
     for user in fake_db:
         if user["email"] == email:
+            return user
+    return None
+
+def get_user_by_id(id: int):
+    for user in fake_db:
+        if user['id'] == id:
             return user
     return None

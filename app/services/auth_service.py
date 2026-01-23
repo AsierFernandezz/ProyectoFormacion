@@ -1,6 +1,5 @@
 from jose import JWTError
-
-from app.repository.user_repo import get_user_by_email, fake_db
+from app.repository.user_repo import get_user_by_email, get_user_by_id
 from app.core.security import verify_password, create_access_token, decode_access_token
 
 
@@ -33,9 +32,3 @@ def auth_user(token: str):
 
     except JWTError:
         raise ValueError("Token inválido o expirado 2")
-
-def get_user_by_id(id: int):
-    for user in fake_db:
-        if user['id'] == id:
-            return user
-    return None
