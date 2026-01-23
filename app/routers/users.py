@@ -54,7 +54,7 @@ def get_all_users(current_user: dict = Depends(get_current_user)):
 def update_user(id, user):
     pass
 
-@router.delete("/user", status_code=200, description="Delete a user")
+@router.delete("/user", status_code=200, description="Delete a user", response_model=dict)
 def delete_user(current_user: dict = Depends(get_current_user), id: int = None):
     try:
         if current_user.get("role") != Role.ADMIN.value:
@@ -68,6 +68,7 @@ def delete_user(current_user: dict = Depends(get_current_user), id: int = None):
             raise HTTPException(status_code=404, detail="No se ha encontrado ningun usuario con el id proporcionado")
 
         fake_db.remove(user)
+        return {"message": "Usuario eliminado correctamente", "user": user}
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
