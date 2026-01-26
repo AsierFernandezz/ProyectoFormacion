@@ -1,15 +1,37 @@
 from datetime import datetime
-from pydantic import BaseModel
+from typing import Optional
+from pydantic import BaseModel, ConfigDict
+from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy.ext.declarative import declarative_base
 
-# lo que envia el cliente
-class UserCreate(BaseModel):
-    name: str
+# SQLAlchemy model
+Base = declarative_base()
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, nullable=False, index=True)
+    name = Column(String, nullable=False)
+    email = Column(String, nullable=False, unique=True, index=True)
+    password = Column(String, nullable=False)
+    role = Column(String, default="user")
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+# Pydantic models
+class UserBase(BaseModel):
+    username: str
     email: str
+    name: str
+
+class UserCreate(UserBase):
     password: str
 
-# lo que devuelve la API
-class UserPublic(BaseModel):
+class UserInDB(UserBase):
     id: int
-    name: str
-    email: str
-    created_at: datetime
+    role: str
+    created_at: Optional[datetime] = None
+    
+    class Config:
+        from_attributes = True
+        extra = "ignore"

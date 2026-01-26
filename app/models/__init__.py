@@ -1,3 +1,3 @@
-from app.models.user import UserCreate, UserPublic
+from app.models.user import User
 
-__all__ = ["UserPublic", "UserCreate"]
+__all__ = ["User"]

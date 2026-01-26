@@ -4,6 +4,9 @@ from jose import jwt, JWTError
 from fastapi.security import OAuth2PasswordBearer, HTTPBearer, HTTPAuthorizationCredentials
 from fastapi import Depends, HTTPException, status
 import secrets
+from sqlalchemy.orm import Session
+
+from app.db.database import get_db
 from app.repository.user_repo import get_user_by_id
 
 SECRET_KEY = secrets.token_hex(64)
@@ -34,16 +37,18 @@ def decode_access_token(token:str):
     except JWTError:
         return None
 
-def get_current_user(token: HTTPAuthorizationCredentials = Depends(HTTPBearer())):
-    payload = decode_access_token(token.credentials)
+def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+):
+    payload = decode_access_token(token)
     if not payload:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token inválido o expirado",
             headers={"WWW-Authenticate": "Bearer"}
         )
-    user_id = int(payload.get("sub"))
-    user = get_user_by_id(user_id)
+    user = get_user_by_id(db, int(payload["sub"]))
 
     if not user:
         raise HTTPException(
@@ -52,7 +57,7 @@ def get_current_user(token: HTTPAuthorizationCredentials = Depends(HTTPBearer())
         )
 
     return {
-        "id": user_id,
-        "role": user.get("role"),
-        "email": user.get("email"),
+        "id": user.id,
+        "role": user.role,
+        "email": user.email,
     }

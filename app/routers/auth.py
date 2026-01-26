@@ -1,26 +1,41 @@
-from fastapi import HTTPException, APIRouter, Depends
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-
-from app.models import UserPublic
-from app.schemas.auth import TokenResponse, LoginRequest
-from app.services.auth_service import login_user, auth_user
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
+from datetime import timedelta
+from app.db.database import get_db
+from app.schemas import UserPublic
+from app.schemas.auth import TokenResponse
+from app.services.auth_service import login_user
+from app.core.security import create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES, get_current_user
 
 router = APIRouter()
 
 @router.post("/login", response_model=TokenResponse)
-def login(request: LoginRequest):
+async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     try:
-        return login_user(request.email, request.password)
-
+        user = login_user(form_data.username, form_data.password, db)
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token = create_access_token(
+            data={"sub": str(user.id), "role": user.role},
+            expires_delta=access_token_expires
+        )
+        # Convert the SQLAlchemy model to a Pydantic model
+        user_public = UserPublic(
+            id=user.id,
+            username=user.username,
+            email=user.email,
+            name=user.name,
+            role=user.role,
+            created_at=user.created_at
+        )
+        return {"access_token": access_token, "token_type": "bearer", "user": user_public}
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
-@router.get("/auth/me", response_model=UserPublic)
-def authenticate_user(credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer())):
-
-    token = credentials.credentials
-
-    try:
-        return auth_user(token)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+@router.get("/me", response_model=UserPublic)
+async def read_users_me(current_user: UserPublic = Depends(get_current_user)):
+    return current_user
