@@ -31,11 +31,8 @@ def create_a_user(user: UserCreate, db: Session = Depends(get_db)):
     status_code=200
 )
 def get_user_by_username(_: dict = Depends(require_user) ,username: str = None, db: Session = Depends(get_db)):
-    try:
-        return get_user(username, db)
+    return get_user(username, db)
 
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
 
 @router.get(
     "/users",
