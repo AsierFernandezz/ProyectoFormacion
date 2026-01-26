@@ -5,7 +5,6 @@ from app.db.database import get_db
 from app.repository.user_repo import get_user_by_username, get_user_by_id
 from app.core.security import verify_password, create_access_token, decode_access_token
 
-
 def login_user(username: str, password: str, db: Session):
     user = get_user_by_username(db, username)
     if not user:
@@ -24,7 +23,6 @@ def auth_user(token: str, db: Session):
             raise ValueError("Token inválido o expirado")
 
         user = get_user_by_id(db, int(payload['sub']))
-        print(user)
 
         if not user:
             raise ValueError("No hay user")

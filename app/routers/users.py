@@ -1,5 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
+
+from app.core.permissions import require_admin, require_user
 from app.db.database import get_db
 from app.schemas import UserPublic, UserCreate
 from app.repository.user_repo import get_user_by_id, delete_user_by_id
@@ -28,11 +30,7 @@ def create_a_user(user: UserCreate, db: Session = Depends(get_db)):
     response_model=UserPublic,
     status_code=200
 )
-def get_user_by_username(current_user: dict = Depends(get_current_user) ,username: str = None, db: Session = Depends(get_db)):
-
-    if not current_user:
-        raise HTTPException(status_code=403, detail="Tienes que iniciar sesión para utilizar este endpoint")
-
+def get_user_by_username(_: dict = Depends(require_user) ,username: str = None, db: Session = Depends(get_db)):
     try:
         return get_user(username, db)
 
@@ -45,12 +43,9 @@ def get_user_by_username(current_user: dict = Depends(get_current_user) ,usernam
     status_code=200,
     description="Get all users",
 )
-def get_all_users(current_user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
+def get_all_users(_: dict = Depends(require_admin), db: Session = Depends(get_db)):
 
     try:
-        if current_user.get("role") != Role.ADMIN.value:
-             raise HTTPException(status_code=403, detail="No tienes permisos para ver todos los usuarios")
-
         return get_users(db)
 
     except ValueError as e:
@@ -61,11 +56,8 @@ def update_user(id, user):
     pass
 
 @router.delete("/user/delete/{id}", status_code=200, description="Delete a user", response_model=dict)
-def delete_user(current_user: dict = Depends(get_current_user), id: int = None, db: Session = Depends(get_db)):
+def delete_user(_: dict = Depends(require_admin), id: int = None, db: Session = Depends(get_db)):
     try:
-        if current_user.get("role") != Role.ADMIN.value:
-            raise HTTPException(status_code=403, detail="No tienes permisos para eliminar un usuario")
-
         if id is None:
             raise HTTPException(status_code=400, detail="No se ha proporcionado un id")
 

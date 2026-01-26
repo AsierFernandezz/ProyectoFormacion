@@ -1,5 +1,7 @@
 from typing import List
 from fastapi import Depends
+
+from app.core.permissions import require_admin
 from app.db.session import get_db
 from app.models import User
 from passlib.context import CryptContext
@@ -32,7 +34,7 @@ def create_user(user:UserCreate, db: Session = Depends(get_db)) -> UserPublic:
 
 def get_user(username: str, db: Session = Depends(get_db)) -> UserPublic:
     existing_user = get_user_by_username(db, username)
-    print(existing_user)
+
     if not existing_user:
         raise ValueError(f"No se ha encontrado ningun usuario con el email {username}")
     return UserPublic(

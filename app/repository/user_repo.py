@@ -6,37 +6,6 @@ from app.db.database import get_db
 from app.models import User
 from sqlalchemy.orm import Session
 
-# fake_db = [
-#     {
-#         "id": 1,
-#         "name": "Asier",
-#         "email": "asier@email.com",
-#         "password": "$2b$12$...",
-#         "role": "user",
-#         "created_at": datetime.utcnow(),
-#     },
-#     {
-#         "id": 2,
-#         "name": "Paco",
-#         "email": "paco@email.com",
-#         "password": "$2b$12$zC7F6gDMg..r9rXN4aTBu.nHXYWr/UhiSZikOODcH8S2zUoree/12",
-#         "role": "user",
-#         "created_at": datetime.utcnow(),
-#     },
-#     {
-#         "id": 3,
-#         "name": "Nora",
-#         "email": "nora@email.com",
-#         "password": "$2y$10$ucFHdCarBdDm0md0K0xg5.ZO5SU8Z3CjZYzSOta7jQ2d352lfE4Ri",
-#         "role": "admin",
-#         "created_at": datetime.utcnow(),
-#     }
-# ]
-
-# def add_user(user_dict: Dict) -> Dict:
-#     fake_db.append(user_dict)
-#     return user_dict
-
 # En user_repo.py
 def get_all_users(db: Session) -> List[User]:
     users = db.query(User).all()
