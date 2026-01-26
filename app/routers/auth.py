@@ -19,16 +19,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
             data={"sub": str(user.id), "role": user.role},
             expires_delta=access_token_expires
         )
-        # Convert the SQLAlchemy model to a Pydantic model
-        user_public = UserPublic(
-            id=user.id,
-            username=user.username,
-            email=user.email,
-            name=user.name,
-            role=user.role,
-            created_at=user.created_at
-        )
-        return {"access_token": access_token, "token_type": "bearer", "user": user_public}
+        return {"access_token": access_token, "token_type": "bearer"}
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

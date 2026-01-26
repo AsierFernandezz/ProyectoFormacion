@@ -28,7 +28,11 @@ def create_a_user(user: UserCreate, db: Session = Depends(get_db)):
     response_model=UserPublic,
     status_code=200
 )
-def get_user_by_username(username: str = None, db: Session = Depends(get_db)):
+def get_user_by_username(current_user: dict = Depends(get_current_user) ,username: str = None, db: Session = Depends(get_db)):
+
+    if current_user.get("role") is None:
+        raise HTTPException(status_code=403, detail="Tienes que iniciar sesión para utilizar este endpoint")
+
     try:
         return get_user(username, db)
 
@@ -41,11 +45,11 @@ def get_user_by_username(username: str = None, db: Session = Depends(get_db)):
     status_code=200,
     description="Get all users",
 )
-def get_all_users(db: Session = Depends(get_db)):
+def get_all_users(current_user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
 
     try:
-        # if current_user.get("role") != Role.ADMIN.value:
-        #     raise HTTPException(status_code=403, detail="No tienes permisos para ver todos los usuarios")
+        if current_user.get("role") != Role.ADMIN.value:
+             raise HTTPException(status_code=403, detail="No tienes permisos para ver todos los usuarios")
 
         return get_users(db)
 
