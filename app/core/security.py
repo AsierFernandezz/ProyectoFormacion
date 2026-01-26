@@ -56,8 +56,4 @@ def get_current_user(
             detail="Usuario no encontrado",
         )
 
-    return {
-        "id": user.id,
-        "role": user.role,
-        "email": user.email,
-    }
+    return user

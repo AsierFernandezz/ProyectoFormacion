@@ -30,7 +30,7 @@ def create_a_user(user: UserCreate, db: Session = Depends(get_db)):
 )
 def get_user_by_username(current_user: dict = Depends(get_current_user) ,username: str = None, db: Session = Depends(get_db)):
 
-    if current_user.get("role") is None:
+    if not current_user:
         raise HTTPException(status_code=403, detail="Tienes que iniciar sesión para utilizar este endpoint")
 
     try:
