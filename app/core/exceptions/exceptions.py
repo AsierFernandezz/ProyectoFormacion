@@ -11,3 +11,20 @@ class UserAlreadyExists(Exception):
         self.user_id = user_id
         self.username = username
         super().__init__("User already exists")
+
+class UserNotAdmin(Exception):
+    def __init__(self, user_id: int | None = None, username: str = None, role: str = None):
+        self.user_id = user_id
+        self.username = username
+        self.role = role
+        super().__init__("User not admin")
+
+class UserNotAuthenticated(Exception):
+    def __init__(self, user_id: int | None = None, username: str = None):
+        self.user_id = user_id
+        self.username = username
+        super().__init__("User not authenticated")
+
+class TokenExpired(Exception):
+    def __init__(self):
+        super().__init__("Token expired")

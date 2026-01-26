@@ -8,8 +8,7 @@ from app.db.database import get_db
 from app.schemas import UserPublic
 from app.schemas.auth import TokenResponse
 from app.services.auth_service import login_user
-from app.core.security import create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES, get_current_user
-
+from app.core.security import create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
 router = APIRouter()
 
 @router.post("/login", response_model=TokenResponse)

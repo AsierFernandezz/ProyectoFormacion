@@ -1,7 +1,7 @@
 from typing import List
 from fastapi import Depends
 
-from app.core.exceptions.exceptions import UserNotFound
+from app.core.exceptions.exceptions import UserNotFound, UserAlreadyExists
 from app.db.session import get_db
 from app.models import User
 from passlib.context import CryptContext
@@ -14,7 +14,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def create_user(user:UserCreate, db: Session = Depends(get_db)) -> UserPublic:
     if get_user_by_username(db, user.username):
-        raise ValueError("Este user ya existe")
+        raise UserAlreadyExists(username=user.username)
 
     # hashear la contraseña
     hashed_password = pwd_context.hash(user.password)
@@ -44,7 +44,6 @@ def get_user(username: str, db: Session = Depends(get_db)) -> UserPublic:
         email=existing_user.email,
         created_at=existing_user.created_at,
     )
-    # Si no encontramos ningún usuario, lanzamos el error
 
 def get_users(db: Session = Depends(get_db)) -> List[UserPublic]:
     return  [

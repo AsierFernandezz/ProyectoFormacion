@@ -1,6 +1,7 @@
 from fastapi import Request
 from fastapi.responses import JSONResponse
-from app.core.exceptions.exceptions import UserNotFound, UserAlreadyExists
+from app.core.exceptions.exceptions import UserNotFound, UserAlreadyExists, UserNotAuthenticated, UserNotAdmin, \
+    TokenExpired
 import logging
 
 logger = logging.getLogger(__name__)
@@ -59,6 +60,47 @@ class UserExceptionHandler(BaseExceptionHandler):
         )
 
 
+    @staticmethod
+    async def user_not_authenticated(request: Request, exc: UserNotAuthenticated) -> JSONResponse:
+        logger.warning(f"User not authenticated: {exc.username}")
+
+        return UserExceptionHandler.create_response(
+            status_code=401,
+            detail="User not authenticated",
+            error_code="USER_NOT_AUTHENTICATED",
+            extra_data={
+            }
+        )
+
+    @staticmethod
+    async def user_not_admin(request: Request, exc: UserNotAdmin) -> JSONResponse:
+        logger.warning(f"User not admin: {exc.username}")
+
+        return UserExceptionHandler.create_response(
+            status_code=403,
+            detail="User not admin",
+            error_code="INSUFFICIENT_PERMISSIONS",
+            extra_data={
+                "user_id": exc.user_id,
+                "username": exc.username,
+                "role": exc.role
+            }
+        )
+
+    @staticmethod
+    async def token_expired(request: Request, exc: TokenExpired) -> JSONResponse:
+        logger.warning("Token has expired:")
+
+        return UserExceptionHandler.create_response(
+            status_code=401,
+            detail="Token has expired",
+            error_code="TOKEN_EXPIRED"
+        )
+
 # Export handlers for registration
 user_not_found_handler = UserExceptionHandler.user_not_found
 user_already_exists_handler = UserExceptionHandler.user_already_exists
+user_not_authenticated_handler = UserExceptionHandler.user_not_authenticated
+user_not_admin_handler = UserExceptionHandler.user_not_admin
+token_expired_handler = UserExceptionHandler.token_expired
+

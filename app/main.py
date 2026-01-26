@@ -15,8 +15,3 @@ ExceptionRegistry(app)
 # Include routers
 app.include_router(users.router, tags=["users"])
 app.include_router(auth.router, tags=["auth"])
-
-@app.get("/health")
-async def health_check():
-    """Health check endpoint"""
-    return {"status": "healthy", "version": "1.0.0"}

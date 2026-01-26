@@ -41,7 +41,6 @@ def get_user_by_username(_: dict = Depends(require_user) ,username: str = None, 
     description="Get all users",
 )
 def get_all_users(_: dict = Depends(require_admin), db: Session = Depends(get_db)):
-
     try:
         return get_users(db)
 
